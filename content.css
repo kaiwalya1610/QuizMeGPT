@@ -1,0 +1,347 @@
+/* Quiz overlay */
+.quizme-gpt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 2147483646; /* One less than quiz container */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Quiz container */
+.quizme-gpt-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 500px;
+  max-width: 95vw;
+  max-height: 90vh;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 2147483647; /* Highest z-index to ensure it's on top */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  color: #333;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+/* Header */
+.quizme-gpt-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #eaecef;
+  cursor: move;
+}
+
+.quizme-gpt-header h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.quizme-gpt-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.quizme-gpt-btn {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  transition: background-color 0.2s;
+}
+
+.quizme-gpt-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.quizme-gpt-primary-btn {
+  background-color: #4285f4;
+  color: white;
+}
+
+.quizme-gpt-primary-btn:hover {
+  background-color: #3367d6;
+}
+
+.quizme-gpt-primary-btn:disabled {
+  background-color: #a8c7fa;
+  cursor: not-allowed;
+}
+
+/* Quiz content */
+.quizme-gpt-content {
+  padding: 20px;
+  max-height: 70vh;
+  overflow-y: auto;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.quizme-gpt-content.quizme-gpt-minimized {
+  display: none;
+}
+
+/* Inline code styling */
+.quizme-gpt-inline-code {
+  font-family: 'Courier New', Courier, monospace;
+  background-color: rgba(175, 184, 193, 0.2);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+.quizme-gpt-difficulty {
+  display: inline-block;
+  padding: 3px 8px;
+  background-color: #f0f4f8;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-bottom: 15px;
+  color: #5f6368;
+}
+
+.quizme-gpt-question,
+.quizme-gpt-question-blanks {
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+/* MCQ styles */
+.quizme-gpt-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.quizme-gpt-option {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.quizme-gpt-option:hover {
+  background-color: #f8f9fa;
+}
+
+.quizme-gpt-option input[type="radio"] {
+  margin-right: 10px;
+}
+
+/* Fill-in-the-blanks styles */
+.quizme-gpt-input-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.quizme-gpt-input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.quizme-gpt-input-container label {
+  font-weight: 500;
+  font-size: 14px;
+  color: #5f6368;
+}
+
+.quizme-gpt-input-blank {
+  display: inline-block;
+  width: 100%;
+  max-width: 350px;
+  height: 30px;
+  border: 2px solid #4285f4;
+  border-radius: 4px;
+  margin: 0 5px;
+  padding: 2px 10px;
+  vertical-align: middle;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  font-family: inherit;
+  font-size: 14px;
+  color: #000000;
+}
+
+.quizme-gpt-input-blank:focus {
+  border-color: #3367d6;
+  box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.3);
+  outline: none;
+}
+
+.quizme-gpt-input-blank.quizme-gpt-disabled {
+  opacity: 0.7;
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+}
+
+.quizme-gpt-options-list {
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  padding: 10px 15px;
+  margin-bottom: 20px;
+  border: 1px solid #eaecef;
+}
+
+.quizme-gpt-options-list p {
+  font-weight: 500;
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: #5f6368;
+}
+
+.quizme-gpt-options-list ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.quizme-gpt-option-item {
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+/* Feedback */
+.quizme-gpt-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.quizme-gpt-feedback {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eaecef;
+}
+
+.quizme-gpt-correct {
+  color: #0f9d58;
+  font-weight: bold;
+}
+
+.quizme-gpt-incorrect {
+  color: #d93025;
+  font-weight: bold;
+}
+
+.quizme-gpt-error {
+  color: #d93025;
+  font-style: italic;
+}
+
+.quizme-gpt-explanation {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+
+.quizme-gpt-explanation h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #5f6368;
+}
+
+.quizme-gpt-correct-answers {
+  margin: 15px 0;
+}
+
+.quizme-gpt-correct-answers h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #5f6368;
+}
+
+.quizme-gpt-correct-answers ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+/* Code formatting for programming quizzes */
+.quizme-gpt-code {
+  font-family: 'Courier New', Courier, monospace;
+  background-color: #f5f7f9;
+  padding: 12px;
+  border-radius: 4px;
+  overflow-x: auto;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  border: 1px solid #e1e4e8;
+  font-size: 14px;
+  color: #24292e;
+  margin: 10px 0;
+}
+
+.quizme-gpt-code .keyword {
+  color: #d73a49;
+  font-weight: bold;
+}
+
+.quizme-gpt-code .string {
+  color: #032f62;
+}
+
+.quizme-gpt-code .comment {
+  color: #6a737d;
+  font-style: italic;
+}
+
+.quizme-gpt-code .function {
+  color: #6f42c1;
+}
+
+.quizme-gpt-code .number {
+  color: #005cc5;
+}
+
+.quizme-gpt-code .operator {
+  color: #d73a49;
+}
+
+/* Line numbers */
+.quizme-gpt-code-with-line-numbers {
+  counter-reset: line;
+  padding-left: 0;
+}
+
+.quizme-gpt-code-with-line-numbers .line {
+  counter-increment: line;
+  position: relative;
+  padding-left: 3em;
+}
+
+.quizme-gpt-code-with-line-numbers .line::before {
+  content: counter(line);
+  position: absolute;
+  left: 0;
+  width: 2.5em;
+  text-align: right;
+  color: #6a737d;
+  padding-right: 0.5em;
+  border-right: 1px solid #e1e4e8;
+}

@@ -1,0 +1,24 @@
+{
+  "name": "quizme-gpt",
+  "version": "1.0.0",
+  "description": "A Chrome extension that generates quizzes on topics you want to learn while browsing",
+  "main": "background.js",
+  "scripts": {
+    "build": "echo \"No build step required\" && exit 0",
+    "dev": "echo \"No development server available\" && exit 0",
+    "lint": "eslint *.js",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": [
+    "chrome-extension",
+    "openai",
+    "gpt-4",
+    "quiz",
+    "learning"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^8.51.0"
+  }
+}

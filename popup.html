@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuizMeGPT</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <h1>QuizMeGPT</h1>
+    
+    <div class="quiz-status">
+      <p>Status: <span id="status">Loading...</span></p>
+      <p>Next quiz in: <span id="next-quiz-time">--:--</span></p>
+    </div>
+    
+    <div class="actions">
+      <button id="generate-quiz-now">Generate Quiz Now</button>
+      <button id="open-options">Settings</button>
+    </div>
+    
+    <div class="stats">
+      <p>Quizzes completed today: <span id="quizzes-today">0</span></p>
+      <p>Current topics:</p>
+      <div id="topics-list" class="topics-list">
+        <span class="empty-topics">No topics set</span>
+      </div>
+    </div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

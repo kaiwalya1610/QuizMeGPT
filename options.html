@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuizMeGPT Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <h1>QuizMeGPT Settings</h1>
+    
+    <div class="form-group">
+      <label for="api-key">OpenAI API Key:</label>
+      <input type="password" id="api-key" placeholder="sk-...">
+      <p class="help-text">Your API key is stored locally and never shared.</p>
+    </div>
+    
+    <div class="form-group">
+      <label for="topic-input">Topics you want to learn:</label>
+      <div class="topic-input-container">
+        <input type="text" id="topic-input" placeholder="Add a topic and press Enter">
+        <button id="add-topic-btn">Add</button>
+      </div>
+      <div id="topics-container" class="topics-container">
+        <!-- Topics will be added here dynamically -->
+      </div>
+      <input type="hidden" id="topics">
+      <p class="help-text">Add multiple topics to get varied quizzes</p>
+    </div>
+    
+    <div class="form-group">
+      <label for="quiz-frequency">Quiz Frequency (minutes):</label>
+      <input type="number" id="quiz-frequency" min="10" value="30">
+    </div>
+    
+    <div class="form-group">
+      <label for="quiz-type">Quiz Types:</label>
+      <div class="checkbox-group">
+        <input type="checkbox" id="mcq" checked>
+        <label for="mcq">Multiple Choice</label>
+        
+        <input type="checkbox" id="fill-blanks" checked>
+        <label for="fill-blanks">Fill in the Blanks</label>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="difficulty">Difficulty Level:</label>
+      <select id="difficulty">
+        <option value="beginner">Beginner</option>
+        <option value="intermediate" selected>Intermediate</option>
+        <option value="advanced">Advanced</option>
+      </select>
+    </div>
+    
+    <button id="save-btn">Save Settings</button>
+    <div id="status-message"></div>
+  </div>
+  
+  <script src="options.js"></script>
+</body>
+</html>
