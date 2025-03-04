@@ -1,5 +1,11 @@
 // Listen for messages from the background script
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  // Respond to ping messages to verify content script is loaded
+  if (message.action === 'ping') {
+    sendResponse({ status: 'ready' });
+    return true;
+  }
+  
   if (message.action === 'displayQuiz' && message.quiz) {
     // Only display the quiz if we don't already have one open
     if (!document.getElementById('quizme-gpt-container')) {
@@ -237,6 +243,18 @@ function checkMCQAnswer(quizContainer, quizData) {
   // Add explanation
   feedbackElement.innerHTML += `<div class="quizme-gpt-explanation"><h3>Explanation:</h3><p>${quizData.explanation}</p></div>`;
   
+  // Add "Explain in Depth" button
+  feedbackElement.innerHTML += `<div class="quizme-gpt-deep-explain">
+    <button id="quizme-gpt-deep-explain-btn" class="quizme-gpt-btn quizme-gpt-secondary-btn">Explain in Depth</button>
+    <div id="quizme-gpt-deep-explanation" class="quizme-gpt-deep-explanation-content"></div>
+  </div>`;
+  
+  // Add event listener for the new button
+  const deepExplainBtn = quizContainer.querySelector('#quizme-gpt-deep-explain-btn');
+  deepExplainBtn.addEventListener('click', () => {
+    getDeepExplanation(quizContainer, quizData);
+  });
+  
   // Disable further submissions
   disableQuizInteraction(quizContainer);
 }
@@ -278,6 +296,18 @@ function checkFillBlanksAnswer(quizContainer, quizData) {
   
   // Add explanation
   feedbackElement.innerHTML += `<div class="quizme-gpt-explanation"><h3>Explanation:</h3><p>${quizData.explanation}</p></div>`;
+  
+  // Add "Explain in Depth" button
+  feedbackElement.innerHTML += `<div class="quizme-gpt-deep-explain">
+    <button id="quizme-gpt-deep-explain-btn" class="quizme-gpt-btn quizme-gpt-secondary-btn">Explain in Depth</button>
+    <div id="quizme-gpt-deep-explanation" class="quizme-gpt-deep-explanation-content"></div>
+  </div>`;
+  
+  // Add event listener for the new button
+  const deepExplainBtn = quizContainer.querySelector('#quizme-gpt-deep-explain-btn');
+  deepExplainBtn.addEventListener('click', () => {
+    getDeepExplanation(quizContainer, quizData);
+  });
   
   // Disable further submissions
   disableQuizInteraction(quizContainer);
@@ -433,4 +463,119 @@ function capitalizeFirstLetter(string) {
 // Helper function to escape special regex characters
 function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// Get a deeper explanation from OpenAI API
+async function getDeepExplanation(quizContainer, quizData) {
+  const deepExplainBtn = quizContainer.querySelector('#quizme-gpt-deep-explain-btn');
+  const deepExplanationContainer = quizContainer.querySelector('#quizme-gpt-deep-explanation');
+  
+  // Show loading state
+  deepExplainBtn.disabled = true;
+  deepExplainBtn.textContent = 'Loading explanation...';
+  deepExplanationContainer.innerHTML = '<div class="quizme-gpt-loading">Generating an in-depth explanation...</div>';
+  
+  try {
+    // Request API key from storage
+    const { apiKey } = await chrome.storage.sync.get(['apiKey']);
+    
+    if (!apiKey) {
+      throw new Error('API key not found. Please configure it in the extension settings.');
+    }
+    
+    // Prepare the question and correct answer for OpenAI
+    let queryContent = '';
+    
+    if (quizData.type === 'mcq') {
+      const correctOptionIndex = quizData.correctAnswer.charCodeAt(0) - 65; // Convert A,B,C,D to 0,1,2,3
+      const correctOptionText = quizData.options[correctOptionIndex];
+      
+      queryContent = `
+Question: ${quizData.question}
+Correct Answer: ${quizData.correctAnswer} - ${correctOptionText}
+Topic: ${quizData.topic}
+      
+Provide an in-depth explanation of this concept. Include examples, analogies, and detailed step-by-step explanations that would help someone deeply understand this topic. If it involves code, include more detailed code examples with thorough explanations of how they work.`;
+    } else {
+      // Handle fill-in-the-blanks
+      queryContent = `
+Question: ${quizData.question}
+Correct Answers: ${quizData.correctAnswers.join(', ')}
+Topic: ${quizData.topic}
+      
+Provide an in-depth explanation of this concept. Include examples, analogies, and detailed step-by-step explanations that would help someone deeply understand this topic. If it involves code, include more detailed code examples with thorough explanations of how they work.`;
+    }
+    
+    // Call OpenAI API for detailed explanation
+    const explanation = await fetchDeepExplanation(apiKey, queryContent);
+    
+    // Display explanation
+    deepExplanationContainer.innerHTML = `
+      <div class="quizme-gpt-deep-explanation-title">In-Depth Explanation</div>
+      <div class="quizme-gpt-deep-explanation-text">${formatCodeSnippets(explanation)}</div>
+    `;
+    
+    // Update button
+    deepExplainBtn.textContent = 'Show Simpler Explanation';
+    deepExplainBtn.disabled = false;
+    
+    // Toggle between simple and deep explanations
+    const explanationDiv = quizContainer.querySelector('.quizme-gpt-explanation');
+    deepExplainBtn.addEventListener('click', () => {
+      if (explanationDiv.style.display === 'none') {
+        explanationDiv.style.display = 'block';
+        deepExplanationContainer.style.display = 'none';
+        deepExplainBtn.textContent = 'Explain in Depth';
+      } else {
+        explanationDiv.style.display = 'none';
+        deepExplanationContainer.style.display = 'block';
+        deepExplainBtn.textContent = 'Show Simpler Explanation';
+      }
+    }, { once: true });
+    
+  } catch (error) {
+    console.error('Error fetching deep explanation:', error);
+    deepExplanationContainer.innerHTML = `<div class="quizme-gpt-error">Failed to get explanation: ${error.message}</div>`;
+    deepExplainBtn.textContent = 'Explain in Depth';
+    deepExplainBtn.disabled = false;
+  }
+}
+
+// Fetch deep explanation from OpenAI API
+async function fetchDeepExplanation(apiKey, content) {
+  const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
+  
+  const data = {
+    model: 'gpt-4o',
+    messages: [
+      {
+        role: 'system',
+        content: 'You are an expert educational assistant who specializes in providing detailed, in-depth explanations of concepts. Your goal is to help users truly master a topic by providing clear, thorough, and insightful explanations with real-world examples, analogies, visualizations (described in text), and practical applications. For code examples, include clear step-by-step explanations. Format your response with markdown including sections, bullet points, and code blocks where appropriate. Use a friendly, enthusiastic tone that makes complex topics accessible and engaging.'
+      
+      },
+      {
+        role: 'user',
+        content: content
+      }
+    ],
+    temperature: 0.7,
+    max_tokens: 4096
+  };
+  
+  const response = await fetch(OPENAI_API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    },
+    body: JSON.stringify(data)
+  });
+  
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(`OpenAI API error: ${errorData.error?.message || response.statusText}`);
+  }
+  
+  const result = await response.json();
+  return result.choices[0].message.content;
 }

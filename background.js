@@ -10,7 +10,8 @@ chrome.runtime.onInstalled.addListener(() => {
       fillBlanks: true,
       difficulty: 'intermediate',
       quizzesToday: 0,
-      lastQuizTime: 0
+      lastQuizTime: 0,
+      previousQuestions: [] // Add storage for previous questions
     },
     (items) => {
       // Setup alarm for quiz generation
@@ -176,19 +177,51 @@ async function generateQuiz() {
     // Send quiz to all tabs
     for (const tab of tabs) {
       try {
-        chrome.tabs.sendMessage(tab.id, {
-          action: 'displayQuiz',
-          quiz
+        // Check if content script is loaded by sending a ping message first
+        chrome.tabs.sendMessage(tab.id, { action: 'ping' }, (response) => {
+          if (chrome.runtime.lastError) {
+            // Content script not loaded, silently ignore
+            console.log(`Tab ${tab.id} not ready for quiz`);
+            return;
+          }
+          
+          // If we get a response, content script is loaded, send the quiz
+          chrome.tabs.sendMessage(tab.id, {
+            action: 'displayQuiz',
+            quiz
+          });
         });
       } catch (error) {
         console.error(`Failed to send quiz to tab ${tab.id}:`, error);
       }
     }
     
-    // Update last quiz time and count
+    // Store the current question in previousQuestions array
+    // Get current previousQuestions
+    const currentSettings = await chrome.storage.sync.get({
+      previousQuestions: []
+    });
+    
+    // Add the new question to the array 
+    let updatedQuestions = [...currentSettings.previousQuestions];
+    
+    // Add the new question to the beginning of the array
+    updatedQuestions.unshift({
+      question: quiz.question,
+      type: quizType,
+      topic: selectedTopic
+    });
+    
+    // Keep only the last 10 questions
+    if (updatedQuestions.length > 10) {
+      updatedQuestions = updatedQuestions.slice(0, 10);
+    }
+    
+    // Update last quiz time, count, and previous questions
     chrome.storage.sync.set({
       lastQuizTime: Date.now(),
-      quizzesToday: settings.quizzesToday + 1
+      quizzesToday: settings.quizzesToday + 1,
+      previousQuestions: updatedQuestions
     });
     
     return true;
@@ -225,20 +258,30 @@ function processFillBlanksMarkdown(quiz) {
 async function generateQuizFromOpenAI(apiKey, topic, quizType, difficulty, pageTitle, pageUrl) {
   const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
   
+  // Get previous questions from storage
+  const settings = await chrome.storage.sync.get({
+    previousQuestions: []
+  });
+  
+  let previousQuestionsText = '';
+  if (settings.previousQuestions && settings.previousQuestions.length > 0) {
+    previousQuestionsText = `\n\nHere are the last ${settings.previousQuestions.length} questions that have been asked. Please create a NEW question that is not repetitive with these:\n\n${settings.previousQuestions.map((q, i) => `${i+1}. ${q.question || q}`).join('\n')}`;
+  }
+  
   let promptContent = '';
   if (quizType === 'mcq') {
     promptContent = `Create a multiple-choice quiz question about "${topic}" at ${difficulty} level. Include 4 options (A, B, C, D) with only one correct answer. Also provide a detailed explanation for the correct answer. 
     
     If the question involves code or programming, format code examples using triple backticks for blocks or single backticks for inline code. For example: \`\`\`javascript\nconsole.log('Hello world');\n\`\`\` or inline like \`const x = 10\`.
-    
-    Format the response as JSON with these fields: question, options (array), correctAnswer (letter), explanation.Provide In depth Answer with easy examples if the numerical dry run is required then provide it. Also add a section in the answer as if you are explaining it to a 5 year old.if the answer contains code then Provide the step By step Dry Run  of the code . my the dry run as illustrative as Possible and DO NOT Answer in Markdown use plain text in the answer.`;
+    You can also involve code in the ques as well if necessary
+    Format the response as JSON with these fields: question, options (array), correctAnswer (letter), explanation.Provide In depth Answer with easy examples if the numerical dry run is required then provide it. Also add a section in the answer as if you are explaining it to a 5 year old.if the answer contains code then Provide the step By step Dry Run  of the code . my the dry run as illustrative as Possible and DO NOT Answer in Markdown use plain text in the answer.${previousQuestionsText}`;
   } else {
     promptContent = `Create a fill-in-the-blanks quiz about "${topic}" at ${difficulty} level. Include a sentence or code snippet with 1-3 blanks, and provide options for each blank that can be dragged to fill them. Include a detailed explanation.
     
     IMPORTANT: For blanks, use double underscores like "__" directly in the text. DO NOT use placeholders like [BLANK_0] in your response. The blanks should be clearly visible in the text as underscores.
-    
+    You can also involve code in the ques as well if necessary
     Example format with underscores for blanks:
-    "In JavaScript, the __ keyword is used to declare variables that cannot be reassigned."
+    "In Python, the __ keyword is used to declare variables that cannot be reassigned."
     
     If the question involves code or programming, format code examples using triple backticks for blocks or single backticks for inline code. For example: \`\`\`javascript\nconsole.log('Hello world');\n\`\`\` or inline like \`const x = 10\`.
     
@@ -249,7 +292,7 @@ async function generateQuizFromOpenAI(apiKey, topic, quizType, difficulty, pageT
     - correctAnswers (array matching the blanks in order)
     - explanation
     
-    Provide an in-depth answer with easy examples. If numerical dry run is required, include it. Also add a section explaining it as if to a 5-year-old. If the answer contains code, provide a step-by-step dry run of the code. Make the dry run as illustrative as possible and use plain text in the answer, not markdown.`;
+    Provide an in-depth answer with easy examples. If numerical dry run is required, include it. Also add a section explaining it as if to a 5-year-old. If the answer contains code, provide a step-by-step dry run of the code. Make the dry run as illustrative as possible and use plain text in the answer, not markdown.${previousQuestionsText}`;
   }
   
   const data = {

@@ -6,35 +6,40 @@
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f5f8fa;
-  color: #333;
+  background-color: #121212;
+  color: #e0e0e0;
   line-height: 1.6;
 }
 
 .container {
-  max-width: 700px;
-  margin: 20px auto;
-  padding: 30px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  max-width: 750px;
+  margin: 30px auto;
+  padding: 35px;
+  background-color: #1e1e1e;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  border: 1px solid #333;
 }
 
 h1 {
   text-align: center;
-  margin-bottom: 30px;
-  color: #2c3e50;
+  margin-bottom: 35px;
+  color: #60a5fa;
+  font-size: 28px;
+  letter-spacing: 0.5px;
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 label {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   font-weight: 600;
-  color: #2c3e50;
+  color: #94a3b8;
+  font-size: 15px;
+  letter-spacing: 0.3px;
 }
 
 input[type="text"],
@@ -43,10 +48,23 @@ input[type="number"],
 textarea,
 select {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  padding: 12px 15px;
+  border: 1px solid #333;
+  border-radius: 6px;
   font-size: 16px;
+  background-color: #252525;
+  color: #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
 }
 
 textarea {
@@ -55,62 +73,74 @@ textarea {
 }
 
 .help-text {
-  font-size: 12px;
-  color: #7f8c8d;
-  margin-top: 5px;
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 6px;
+  font-style: italic;
 }
 
 .checkbox-group {
   display: flex;
-  gap: 20px;
-  margin-top: 10px;
+  gap: 25px;
+  margin-top: 12px;
 }
 
 .checkbox-group label {
   font-weight: normal;
   display: inline;
-  margin-left: 5px;
+  margin-left: 6px;
+  color: #cbd5e1;
+}
+
+input[type="checkbox"] {
+  accent-color: #3b82f6;
+  width: 16px;
+  height: 16px;
 }
 
 button {
   display: block;
   width: 100%;
-  padding: 12px;
-  background-color: #3498db;
+  padding: 14px;
+  background-color: #3b82f6;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s;
-  margin-top: 20px;
+  transition: all 0.3s ease;
+  margin-top: 25px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
 }
 
 button:hover {
-  background-color: #2980b9;
+  background-color: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4);
 }
 
 #status-message {
-  margin-top: 15px;
+  margin-top: 18px;
   text-align: center;
   font-weight: bold;
-  height: 20px;
+  height: 24px;
 }
 
 .success {
-  color: #27ae60;
+  color: #34d399;
 }
 
 .error {
-  color: #e74c3c;
+  color: #f87171;
 }
 
 /* Topics input styles */
 .topic-input-container {
   display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 12px;
+  margin-bottom: 15px;
 }
 
 .topic-input-container input {
@@ -119,49 +149,57 @@ button:hover {
 
 #add-topic-btn {
   width: auto;
-  padding: 10px 15px;
+  padding: 12px 18px;
   margin-top: 0;
+  background-color: #4b5563;
+}
+
+#add-topic-btn:hover {
+  background-color: #6b7280;
 }
 
 .topics-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 15px;
-  min-height: 40px;
-  border: 1px dashed #ddd;
-  border-radius: 4px;
-  padding: 10px;
+  gap: 12px;
+  margin-top: 18px;
+  min-height: 50px;
+  border: 1px dashed #4b5563;
+  border-radius: 6px;
+  padding: 15px;
+  background-color: #252525;
 }
 
 .topic-tag {
   display: flex;
   align-items: center;
-  background-color: #e8f0fe;
+  background-color: #334155;
   border-radius: 20px;
-  padding: 5px 15px;
+  padding: 6px 16px;
   font-size: 14px;
+  border: 1px solid #475569;
+  color: #94a3b8;
 }
 
 .topic-tag .topic-text {
-  margin-right: 8px;
+  margin-right: 10px;
 }
 
 .topic-tag .remove-topic {
   cursor: pointer;
-  color: #7f8c8d;
+  color: #94a3b8;
   font-weight: bold;
   font-size: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .topic-tag .remove-topic:hover {
-  background-color: #dfe6e9;
-  color: #e74c3c;
+  background-color: #475569;
+  color: #f87171;
 }
