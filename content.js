@@ -546,7 +546,7 @@ async function fetchDeepExplanation(apiKey, content) {
   const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
   
   const data = {
-    model: 'gpt-4o',
+    model: 'o3-mini',
     messages: [
       {
         role: 'system',

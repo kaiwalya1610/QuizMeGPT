@@ -296,7 +296,7 @@ async function generateQuizFromOpenAI(apiKey, topic, quizType, difficulty, pageT
   }
   
   const data = {
-    model: 'gpt-4o',
+    model: 'o3-mini',
     messages: [
       {
         role: 'system',
