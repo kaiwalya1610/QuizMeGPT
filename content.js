@@ -558,8 +558,8 @@ async function fetchDeepExplanation(apiKey, content) {
         content: content
       }
     ],
-    temperature: 0.7,
-    max_tokens: 4096
+    
+    max_completion_tokens: 4096
   };
   
   const response = await fetch(OPENAI_API_URL, {

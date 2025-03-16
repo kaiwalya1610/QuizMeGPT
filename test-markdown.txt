@@ -1,0 +1,23 @@
+Testing the enhanced Markdown renderer with various syntax:
+1. Task List:
+- [ ] Unchecked task
+- [x] Completed task
+
+2. Strikethrough:
+~~deprecated code~~
+
+3. Nested Blockquotes:
+> First level
+>> Second level
+
+4. Code with language:
+```javascript
+const x = 10;
+console.log(x);
+```
+
+5. Tables with alignment:
+| Left | Center | Right |
+|:-----|:------:|------:|
+| 1    | 2      | 3     |
+| 4    | 5      | 6     |

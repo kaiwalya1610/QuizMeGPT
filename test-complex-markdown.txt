@@ -1,0 +1,42 @@
+# Advanced Markdown Test
+
+## Fill-in-the-Blanks with Various Formats
+
+1. Standard format: JavaScript uses ____ to handle asynchronous operations.
+2. Bracketed format: Python's primary data types include [____] and (____).
+3. Spaced format: The command to start a React project is _____ .
+
+## Task Lists
+
+- [ ] Study basic Markdown syntax
+- [x] Implement enhanced Markdown parsing
+- [ ] Test table formatting
+
+## Tables with Formatting
+
+| Feature | **Support Level** | *Notes* |
+|:--------|:----------------:|--------:|
+| Code `blocks` | **High** | Works with syntax highlighting |
+| ~~Strikethrough~~ | Medium | Implemented in tables too |
+| [Links](https://example.com) | High | Fully functional |
+
+## Nested Blockquotes
+
+> This is a first-level quote
+>> This is a nested quote
+>>> This is a deeply nested quote
+
+## Code Examples
+
+```javascript
+// Function with multiple blanks
+function calculate(____, ____) {
+  return x + y * 2;
+}
+```
+
+```python
+def process_data(data):
+    # Fill in the blank
+    result = data.____()
+    return result
